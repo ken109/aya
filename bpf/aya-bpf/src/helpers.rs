@@ -21,9 +21,9 @@ pub unsafe fn bpf_probe_read<T>(src: *const T) -> Result<T, c_long> {
 }
 
 #[inline]
-pub unsafe fn bpf_probe_read_to_dst<T>(dst: &mut T, src: *const T) -> Result<(), c_long> {
+pub unsafe fn bpf_probe_read_to_dst<T>(&mut dst: T, src: *const T) -> Result<(), c_long> {
     let ret = gen::bpf_probe_read(
-        dst as *mut _ as *mut c_void,
+        &mut dst as *mut _ as *mut c_void,
         mem::size_of::<T>() as u32,
         src as *const c_void,
     );
