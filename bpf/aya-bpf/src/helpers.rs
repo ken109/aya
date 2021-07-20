@@ -21,6 +21,20 @@ pub unsafe fn bpf_probe_read<T>(src: *const T) -> Result<T, c_long> {
 }
 
 #[inline]
+pub unsafe fn bpf_probe_read_to_dst<T>(dst: &mut T, src: *const T) -> Result<(), c_long> {
+    let ret = gen::bpf_probe_read(
+        dst as *mut c_void,
+        mem::size_of::<T>() as u32,
+        src as *const c_void,
+    );
+    if ret < 0 {
+        return Err(ret);
+    }
+
+    Ok(())
+}
+
+#[inline]
 pub fn bpf_get_current_comm() -> Result<[c_char; 16], ()> {
     let mut comm: [c_char; 16usize] = [0; 16];
     if unsafe { gen::bpf_get_current_comm(&mut comm as *mut _ as *mut c_void, 16u32) } == 0 {
